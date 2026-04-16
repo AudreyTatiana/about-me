@@ -401,7 +401,7 @@
 <section id="hero">
   <div class="hero-bg"></div>
   <div class="hero-left">
-    <div class="hero-tag"><span></span> Disponible pour une alternance dès Septembre 2026</div>
+    <div class="hero-tag"><span></span> Disponible pour alternance 2026</div>
     <h1>Audrey<br><em>Tatiana</em><br>Kamga</h1>
     <p class="hero-sub">
       <strong>Développeuse Full Stack</strong> passionnée — Bachelor 3 ENSITECH · Île-de-France.<br>
@@ -522,8 +522,8 @@
       <div class="tl-dot">🎓</div>
       <div class="tl-content">
         <p class="tl-year">2026 — 2028</p>
-        <h3>M1/M2 Web & Mobile Development</h3>
-        <p>Intégrer une école d'excellence pour atteindre le Bac+5, maîtriser le développement web et mobile avancé, le Cloud et les architectures API modernes en alternance.</p>
+        <h3>MSc & MBA Web & Mobile Development</h3>
+        <p>Intégrer une école d'excellence comme l'ESTIAM pour atteindre le Bac+5, maîtriser le développement mobile avancé, le Cloud et les architectures API modernes en alternance.</p>
       </div>
     </div>
     <div class="tl-item reveal">
@@ -602,13 +602,13 @@
         </a>
       </div>
     </div>
-    <form id="contact-form" action="https://formspree.io/f/xrerpgzo" method="POST"></form>
+    <form class="reveal" id="contact-form" action="https://formspree.io/f/xrerpgzo" method="POST">
       <div class="form-row">
-        <input type="text" placeholder="Votre nom" required>
-        <input type="email" placeholder="Votre email" required>
+        <input type="text" name="nom" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
       </div>
-      <input type="text" placeholder="Sujet">
-      <textarea placeholder="Votre message..."></textarea>
+      <input type="text" name="sujet" placeholder="Sujet">
+      <textarea name="message" placeholder="Votre message..."></textarea>
       <button class="btn-submit" type="submit">Envoyer le message →</button>
       <p id="form-msg"></p>
     </form>
@@ -656,28 +656,40 @@
     e.preventDefault();
     const msg = document.getElementById('form-msg');
     const form = this;
-    msg.textContent = 'Envoi en cours...';
+    const btn = form.querySelector('.btn-submit');
+
+    msg.style.color = 'var(--blue)';
+    msg.textContent = '⏳ Envoi en cours...';
+    btn.disabled = true;
+    btn.textContent = 'Envoi...';
 
     try {
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { 'Accept': 'application/json' }
-        });
-        if (response.ok) {
-            msg.style.color = '#2e7d32';
-            msg.textContent = '✓ Message envoyé ! Je vous répondrai rapidement.';
-            form.reset();
-            setTimeout(() => msg.textContent='', 5000);
-        } else {
-            msg.style.color = 'red';
-            msg.textContent = '✗ Erreur lors de l\'envoi. Réessaie.';
-        }
-    } catch(err) {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        msg.style.color = '#2e7d32';
+        msg.textContent = '✓ Message envoyé ! Je vous répondrai rapidement.';
+        form.reset();
+        btn.textContent = 'Envoyer le message →';
+        btn.disabled = false;
+        setTimeout(() => msg.textContent = '', 6000);
+      } else {
+        const data = await res.json();
         msg.style.color = 'red';
-        msg.textContent = '✗ Erreur réseau. Vérifie ta connexion.';
+        msg.textContent = data.errors ? data.errors.map(e => e.message).join(', ') : '✗ Erreur. Réessaie.';
+        btn.textContent = 'Envoyer le message →';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      msg.style.color = 'red';
+      msg.textContent = '✗ Erreur réseau. Vérifie ta connexion.';
+      btn.textContent = 'Envoyer le message →';
+      btn.disabled = false;
     }
-});
+  });
 
   // ── NAVBAR ACTIVE ───────────────────────────────────────────────────────────
   const sections = document.querySelectorAll('section[id]');
